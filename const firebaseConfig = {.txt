@@ -1,0 +1,35 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyBIL2PIcXp-yYBYlh7hrGWvoSoKIAaqq-Y",
+  authDomain: "web-game-9185f.firebaseapp.com",
+  databaseURL: "https://web-game-9185f-default-rtdb.firebaseio.com",
+  projectId: "web-game-9185f",
+  storageBucket: "web-game-9185f.firebasestorage.app",
+  messagingSenderId: "241450507241",
+  appId: "1:241450507241:web:060095b24f65beaf440978"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function getRoomId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('room');
+}
+
+function getPlayerId() {
+  if (!sessionStorage.getItem('playerId')) {
+    sessionStorage.setItem('playerId', 'player_' + Math.random().toString(36).substr(2, 8));
+  }
+  return sessionStorage.getItem('playerId');
+}
+
+function getPlayerName() {
+  return sessionStorage.getItem('playerName') || 'ゲスト';
+}
+
+function formatMoney(amount) {
+  return '¥' + Number(amount).toLocaleString();
+}
+
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
