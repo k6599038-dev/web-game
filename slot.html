@@ -6,243 +6,117 @@
 <title>ラウンド3 スロット — GRAND ROYAL</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --gold:#c9a84c;--gold-light:#f0d080;
-    --dark:#0a0a0f;--dark2:#12121a;--dark3:#1c1c28;
-    --card-bg:#181824;--text:#e8e4d8;--text-muted:#888070;
-    --red:#e74c3c;--green:#2ecc71;--border:rgba(201,168,76,0.2);
-    --slot-bg:#0d0d18;
-  }
+  :root{--gold:#c9a84c;--gold-light:#f0d080;--dark:#0a0a0f;--dark3:#1c1c28;--card-bg:#181824;--text:#e8e4d8;--text-muted:#888070;--red:#e74c3c;--green:#2ecc71;--border:rgba(201,168,76,0.2);}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--dark);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;}
-  body::before{content:'';position:fixed;inset:0;
-    background:radial-gradient(ellipse at 50% 10%,rgba(201,168,76,0.1) 0%,transparent 50%);
-    pointer-events:none;}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 10%,rgba(201,168,76,0.1) 0%,transparent 50%);pointer-events:none;}
 
-  .game-header{
-    background:var(--card-bg);border-bottom:1px solid var(--border);
-    display:flex;align-items:center;justify-content:space-between;padding:14px 24px;
-    position:sticky;top:0;z-index:100;
-  }
+  .game-header{background:var(--card-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:14px 24px;position:sticky;top:0;z-index:100;}
   .game-header .title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold-light);}
   .round-badge{background:linear-gradient(135deg,#c9a84c,#e6b94a);color:var(--dark);padding:4px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;}
   .money-display{font-size:0.9rem;color:var(--gold);font-weight:700;}
 
-  .container{max-width:760px;margin:0 auto;padding:24px 16px 60px;}
+  /* 2カラムレイアウト */
+  .main-layout{display:flex;gap:16px;max-width:1100px;margin:0 auto;padding:16px 16px 60px;align-items:flex-start;}
+  .left-col{flex:1;min-width:0;}
+  .right-col{flex:0 0 240px;}
+  @media(max-width:700px){.main-layout{flex-direction:column;}.right-col{width:100%;}}
 
-  /* ─── スロットマシン本体 ─── */
+  /* スロットマシン */
   .slot-machine{
     background:linear-gradient(180deg,#1a1025 0%,#0d0d18 100%);
-    border:3px solid;
-    border-color:#4a3020 #8a6030 #8a6030 #4a3020;
-    border-radius:24px;
-    padding:28px 24px;
-    margin-bottom:20px;
-    box-shadow:
-      inset 0 2px 8px rgba(255,255,255,0.05),
-      0 8px 40px rgba(0,0,0,0.7);
-    position:relative;overflow:hidden;
-  }
-  .slot-machine::before{
-    content:'GRAND ROYAL';
-    position:absolute;top:14px;left:50%;transform:translateX(-50%);
-    font-family:'Playfair Display',serif;font-size:0.85rem;
-    background:linear-gradient(135deg,#c9a84c,#f0d080);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    background-clip:text;letter-spacing:0.3em;white-space:nowrap;
-  }
-
-  /* ─── リール ─── */
-  .reels-wrapper{
-    display:flex;gap:8px;justify-content:center;margin:28px 0 20px;
-    background:rgba(0,0,0,0.6);border-radius:16px;
-    padding:16px;border:2px solid rgba(201,168,76,0.15);
+    border:3px solid;border-color:#4a3020 #8a6030 #8a6030 #4a3020;
+    border-radius:20px;padding:22px 18px;margin-bottom:14px;
+    box-shadow:inset 0 2px 8px rgba(255,255,255,0.05),0 8px 40px rgba(0,0,0,0.7);
     position:relative;
   }
-  /* 当たりライン */
-  .reels-wrapper::before,.reels-wrapper::after{
-    content:'';position:absolute;left:12px;right:12px;height:2px;
-    background:linear-gradient(90deg,transparent,rgba(201,168,76,0.6),transparent);
-  }
-  .reels-wrapper::before{top:calc(50% - 1px);}
-  .reels-wrapper::after{display:none;}
+  .slot-machine::before{content:'GRAND ROYAL';position:absolute;top:10px;left:50%;transform:translateX(-50%);font-family:'Playfair Display',serif;font-size:0.78rem;background:linear-gradient(135deg,#c9a84c,#f0d080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.3em;white-space:nowrap;}
 
-  .reel-container{
-    width:90px;overflow:hidden;border-radius:10px;
-    background:var(--dark);border:2px solid rgba(255,255,255,0.05);
-    height:90px;position:relative;
-  }
-  .reel-container.wild{border-color:var(--gold);box-shadow:0 0 12px rgba(201,168,76,0.5);}
-  .reel{
-    display:flex;flex-direction:column;align-items:center;
-    transition:none;
-  }
-  .reel.spinning{
-    animation:reelSpin var(--dur,0.08s) linear infinite;
-  }
-  @keyframes reelSpin{
-    0%{transform:translateY(0);}
-    100%{transform:translateY(-90px);}
-  }
-  .symbol{
-    width:90px;height:90px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:3rem;flex-shrink:0;
-  }
+  .reels-wrapper{display:flex;gap:6px;justify-content:center;margin:24px 0 14px;background:rgba(0,0,0,0.6);border-radius:12px;padding:12px;border:2px solid rgba(201,168,76,0.15);position:relative;}
+  .reels-wrapper::before{content:'';position:absolute;left:10px;right:10px;height:2px;top:calc(50% - 1px);background:linear-gradient(90deg,transparent,rgba(201,168,76,0.6),transparent);}
 
-  /* ─── 当たりアニメーション ─── */
-  .win-flash{
-    animation:winFlash 0.5s ease-in-out 3;
-  }
-  @keyframes winFlash{
-    0%,100%{background:rgba(0,0,0,0.6);}
-    50%{background:rgba(201,168,76,0.2);}
-  }
-  .jackpot-flash{
-    animation:jackpotFlash 0.3s ease-in-out 6;
-  }
-  @keyframes jackpotFlash{
-    0%,100%{background:rgba(0,0,0,0.6);}
-    50%{background:rgba(255,215,0,0.4);}
-  }
+  .reel-container{width:80px;overflow:hidden;border-radius:8px;background:var(--dark);border:2px solid rgba(255,255,255,0.05);height:80px;position:relative;}
+  .reel-container.wild{border-color:var(--gold);box-shadow:0 0 10px rgba(201,168,76,0.5);}
+  .reel{display:flex;flex-direction:column;align-items:center;}
+  .symbol{width:80px;height:80px;display:flex;align-items:center;justify-content:center;font-size:2.6rem;flex-shrink:0;}
 
-  /* ─── ベット & コントロール ─── */
-  .bet-section{
-    background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
-    padding:20px;margin-bottom:16px;
-  }
-  .bet-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
-  .bet-label{font-size:0.78rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;}
-  .bet-input-row{display:flex;gap:6px;flex-wrap:wrap;}
-  .bet-option{
-    padding:8px 16px;border-radius:8px;border:1px solid var(--border);
-    background:var(--dark3);color:var(--text);font-size:0.85rem;cursor:pointer;
-    transition:all .15s;font-family:'Noto Sans JP',sans-serif;
-  }
+  @keyframes reelSpin{0%{transform:translateY(0);}100%{transform:translateY(-80px);}}
+  .spinning{animation:reelSpin 0.07s linear infinite;}
+
+  @keyframes winFlash{0%,100%{background:rgba(0,0,0,0.6);}50%{background:rgba(201,168,76,0.2);}}
+  @keyframes jackpotFlash{0%,100%{background:rgba(0,0,0,0.6);}50%{background:rgba(255,215,0,0.4);}}
+  .win-flash{animation:winFlash 0.5s ease-in-out 3;}
+  .jackpot-flash{animation:jackpotFlash 0.3s ease-in-out 6;}
+
+  /* ベット・コントロール */
+  .bet-section{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
+  .bet-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+  .bet-label-sm{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;}
+  .bet-option{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--dark3);color:var(--text);font-size:0.82rem;cursor:pointer;transition:all .15s;font-family:'Noto Sans JP',sans-serif;}
   .bet-option:hover{border-color:var(--gold);color:var(--gold);}
   .bet-option.active{background:rgba(201,168,76,0.15);border-color:var(--gold);color:var(--gold);}
 
-  .spins-info{
-    display:flex;gap:16px;font-size:0.85rem;flex-wrap:wrap;
-  }
+  .spins-info{display:flex;gap:14px;font-size:0.82rem;flex-wrap:wrap;align-items:center;}
   .spins-info span{color:var(--text-muted);}
   .spins-info strong{color:var(--gold-light);}
+  .spins-bar{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;min-width:60px;}
+  .spins-bar-fill{height:100%;background:linear-gradient(90deg,#c9a84c,#f0d080);border-radius:3px;transition:width .3s;}
 
-  /* ─── スピンボタン ─── */
-  .spin-btn-big{
-    width:100%;padding:18px;border-radius:12px;border:none;
-    font-size:1.2rem;font-family:'Playfair Display',serif;font-weight:700;
-    cursor:pointer;letter-spacing:0.1em;
-    background:linear-gradient(135deg,#c9a84c,#f0d080,#c9a84c);
-    color:var(--dark);
-    transition:all .2s;
-    box-shadow:0 4px 20px rgba(201,168,76,0.25);
-    margin-bottom:12px;
-  }
+  /* スピンボタン */
+  .spin-btn-big{width:100%;padding:16px;border-radius:10px;border:none;font-size:1.1rem;font-family:'Playfair Display',serif;font-weight:700;cursor:pointer;letter-spacing:0.1em;background:linear-gradient(135deg,#c9a84c,#f0d080,#c9a84c);color:var(--dark);transition:all .2s;box-shadow:0 4px 20px rgba(201,168,76,0.25);margin-bottom:8px;}
   .spin-btn-big:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,168,76,0.4);}
   .spin-btn-big:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+  .stop-btn{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(231,76,60,0.4);background:rgba(231,76,60,0.1);color:#e74c3c;font-size:0.9rem;font-family:'Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:8px;display:none;}
+  .stop-btn:hover{background:rgba(231,76,60,0.2);}
 
-  /* ─── アイテム使用 ─── */
-  .items-bar{
-    background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
-    padding:16px 20px;margin-bottom:16px;
-  }
-  .items-bar h3{font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;letter-spacing:0.05em;}
-  .items-list{display:flex;gap:8px;flex-wrap:wrap;}
-  .item-pill{
-    padding:8px 14px;border-radius:20px;border:1px solid var(--border);
-    background:var(--dark3);font-size:0.8rem;cursor:pointer;
-    display:flex;align-items:center;gap:6px;transition:all .15s;
-  }
+  /* スピン結果 */
+  .spin-result{text-align:center;min-height:48px;display:flex;align-items:center;justify-content:center;font-size:0.95rem;color:var(--gold-light);font-family:'Playfair Display',serif;}
+
+  /* アイテムバー */
+  .items-bar{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
+  .items-bar h3{font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;letter-spacing:0.05em;text-transform:uppercase;}
+  .items-list{display:flex;gap:6px;flex-wrap:wrap;}
+  .item-pill{padding:7px 12px;border-radius:16px;border:1px solid var(--border);background:var(--dark3);font-size:0.78rem;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;user-select:none;}
   .item-pill:hover{border-color:var(--gold);}
   .item-pill.active{background:rgba(201,168,76,0.15);border-color:var(--gold);color:var(--gold);}
-  .item-pill.used{opacity:0.35;pointer-events:none;text-decoration:line-through;}
-  .item-count{
-    background:var(--gold);color:var(--dark);
-    border-radius:8px;padding:1px 6px;font-size:0.68rem;font-weight:700;
-  }
-  .no-items{font-size:0.85rem;color:var(--text-muted);}
+  .item-pill.used{opacity:0.3;pointer-events:none;text-decoration:line-through;}
+  .item-count{background:var(--gold);color:var(--dark);border-radius:8px;padding:1px 6px;font-size:0.65rem;font-weight:700;}
+  .no-items{font-size:0.82rem;color:var(--text-muted);}
 
-  /* ─── 結果表示 ─── */
-  .spin-result{
-    text-align:center;min-height:60px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:1rem;color:var(--gold-light);
-    margin-bottom:12px;
-    font-family:'Playfair Display',serif;
-  }
+  /* ─── 右カラム：倍率表＋ランキング ─── */
+  .panel{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;}
+  .panel-header{background:rgba(201,168,76,0.1);border-bottom:1px solid var(--border);padding:10px 14px;font-size:0.78rem;font-weight:700;color:var(--gold-light);}
+  .panel-row{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.78rem;}
+  .panel-row:last-child{border-bottom:none;}
+  .panel-row .sym{font-size:1rem;margin-right:4px;}
+  .panel-row .name{color:var(--text-muted);flex:1;}
+  .mult-badge{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);border-radius:5px;padding:1px 7px;font-size:0.72rem;font-weight:700;color:var(--gold-light);}
+  .mult-badge.hi{background:rgba(46,204,113,0.1);border-color:rgba(46,204,113,0.3);color:var(--green);}
 
-  /* ─── プレイヤーランキング ─── */
-  .ranking-section{
-    background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
-    padding:20px;margin-bottom:16px;
-  }
-  .ranking-section h3{
-    font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold-light);
-    margin-bottom:16px;display:flex;align-items:center;gap:12px;
-  }
-  .ranking-section h3::after{content:'';flex:1;height:1px;background:var(--border);}
-  .rank-row{
-    display:flex;align-items:center;gap:12px;
-    padding:10px 0;border-bottom:1px solid var(--border);
-  }
+  /* ランキング */
+  .rank-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.04);}
   .rank-row:last-child{border-bottom:none;}
-  .rank-num{
-    width:28px;height:28px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-size:0.8rem;font-weight:700;flex-shrink:0;
-  }
+  .rank-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;}
   .rank-1{background:var(--gold);color:var(--dark);}
   .rank-2{background:#c0c0c0;color:var(--dark);}
   .rank-3{background:#cd7f32;color:white;}
-  .rank-other{background:var(--dark3);color:var(--text-muted);}
-  .rank-name{flex:1;font-size:0.9rem;}
-  .rank-money{font-size:1rem;color:var(--gold);font-weight:700;}
+  .rank-o{background:var(--dark3);color:var(--text-muted);}
+  .rank-name{flex:1;font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rank-money{font-size:0.82rem;color:var(--gold);font-weight:700;}
 
-  /* ─── 最終結果 ─── */
-  .final-overlay{
-    display:none;position:fixed;inset:0;
-    background:rgba(0,0,0,0.9);z-index:300;
-    align-items:center;justify-content:center;
-  }
+  /* 最終結果 */
+  .final-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:300;align-items:center;justify-content:center;}
   .final-overlay.show{display:flex;}
-  .final-box{
-    background:var(--card-bg);border:2px solid var(--gold);border-radius:24px;
-    padding:40px;text-align:center;max-width:520px;width:90%;
-    position:relative;overflow:hidden;
-  }
-  .final-box::before{
-    content:'';position:absolute;inset:0;
-    background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.15) 0%,transparent 60%);
-    pointer-events:none;
-  }
-  .final-box h2{
-    font-family:'Playfair Display',serif;font-size:2.5rem;
-    background:linear-gradient(135deg,#c9a84c,#f0d080,#c9a84c);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    background-clip:text;margin-bottom:8px;
-  }
-  .winner-name{
-    font-size:2rem;font-weight:700;color:var(--gold-light);margin:16px 0;
-    font-family:'Playfair Display',serif;
-  }
-  .final-ranking{text-align:left;margin:20px 0;}
-
-  /* ─── 花火エフェクト ─── */
-  .firework{
-    position:fixed;pointer-events:none;z-index:400;
-    animation:fwBurst .8s ease-out forwards;
-  }
-  @keyframes fwBurst{
-    0%{transform:scale(0);opacity:1;}
-    100%{transform:scale(1);opacity:0;}
-  }
-
-  .btn{padding:14px 32px;border-radius:10px;border:none;font-size:0.95rem;font-family:'Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;}
+  .final-box{background:var(--card-bg);border:2px solid var(--gold);border-radius:24px;padding:36px;text-align:center;max-width:480px;width:90%;position:relative;overflow:hidden;}
+  .final-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.15) 0%,transparent 60%);pointer-events:none;}
+  .final-box h2{font-family:'Playfair Display',serif;font-size:2.2rem;background:linear-gradient(135deg,#c9a84c,#f0d080,#c9a84c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+  .winner-name{font-size:1.8rem;font-weight:700;color:var(--gold-light);margin:12px 0;font-family:'Playfair Display',serif;}
+  .btn{padding:14px 28px;border-radius:10px;border:none;font-size:0.95rem;font-family:'Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;}
   .btn-gold{background:linear-gradient(135deg,#c9a84c,#f0d080,#c9a84c);color:var(--dark);}
   .btn-gold:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,168,76,0.3);}
-  .btn-outline{background:transparent;border:1px solid var(--gold);color:var(--gold);}
-  .btn-outline:hover{background:rgba(201,168,76,0.08);}
+
+  @keyframes fwBurst{0%{transform:scale(0);opacity:1;}100%{transform:scale(1);opacity:0;}}
+  .firework{position:fixed;pointer-events:none;z-index:400;animation:fwBurst .8s ease-out forwards;border-radius:50%;}
 </style>
 </head>
 <body>
@@ -253,65 +127,90 @@
   <span class="money-display" id="header-money">¥10,000</span>
 </div>
 
-<div class="container">
+<div class="main-layout">
 
-  <!-- スロットマシン -->
-  <div class="slot-machine">
-    <div class="reels-wrapper" id="reels-wrapper">
-      <div class="reel-container" id="rc0"><div class="reel" id="reel-0"><div class="symbol">🍒</div></div></div>
-      <div class="reel-container" id="rc1"><div class="reel" id="reel-1"><div class="symbol">⭐</div></div></div>
-      <div class="reel-container" id="rc2"><div class="reel" id="reel-2"><div class="symbol">7️⃣</div></div></div>
-    </div>
+  <!-- 左カラム：スロット本体 -->
+  <div class="left-col">
 
-    <div class="spin-result" id="spin-result">スピンしてください！</div>
+    <div class="slot-machine">
+      <div class="reels-wrapper" id="reels-wrapper">
+        <div class="reel-container" id="rc0"><div class="reel" id="reel-0"><div class="symbol">🍒</div></div></div>
+        <div class="reel-container" id="rc1"><div class="reel" id="reel-1"><div class="symbol">⭐</div></div></div>
+        <div class="reel-container" id="rc2"><div class="reel" id="reel-2"><div class="symbol">7️⃣</div></div></div>
+      </div>
 
-    <!-- ベット設定 -->
-    <div class="bet-section">
-      <div class="bet-row">
-        <span class="bet-label">ベット額</span>
-        <div class="bet-input-row">
+      <div class="spin-result" id="spin-result">スピンしてください！</div>
+
+      <div class="bet-section">
+        <div class="bet-row">
+          <span class="bet-label-sm">ベット額</span>
           <div class="bet-option active" onclick="setBet(200)">¥200</div>
           <div class="bet-option" onclick="setBet(500)">¥500</div>
           <div class="bet-option" onclick="setBet(1000)">¥1,000</div>
           <div class="bet-option" onclick="setBet(2000)">¥2,000</div>
           <div class="bet-option" onclick="setBet(5000)">¥5,000</div>
         </div>
+        <div class="spins-info">
+          <span>残りスピン: <strong id="spins-left">10</strong></span>
+          <span>使用済: <strong id="spins-used">0</strong></span>
+          <div class="spins-bar"><div class="spins-bar-fill" id="spins-bar-fill" style="width:100%"></div></div>
+          <span id="spins-max-label" style="font-size:0.72rem;color:var(--text-muted)">最大100</span>
+        </div>
       </div>
-      <div class="spins-info">
-        <span>残りスピン: <strong id="spins-left">5</strong></span>
-        <span>消費済み: <strong id="spins-used">0</strong></span>
-      </div>
+
+      <button class="spin-btn-big" id="spin-btn" onclick="doSpin()">🎰 SPIN！</button>
+      <button class="stop-btn" id="stop-btn" onclick="stopEarly()">⏹ ここでやめる（残りスピンを放棄）</button>
     </div>
 
-    <button class="spin-btn-big" id="spin-btn" onclick="doSpin()">🎰 SPIN！</button>
+    <!-- アイテム -->
+    <div class="items-bar">
+      <h3>🎒 アイテム（クリックで使用ON/OFF）</h3>
+      <div class="items-list" id="items-list"><span class="no-items">アイテムなし</span></div>
+    </div>
+
+    <p style="text-align:center;color:var(--text-muted);font-size:0.82rem;margin-top:4px" id="end-status"></p>
   </div>
 
-  <!-- アイテム使用 -->
-  <div class="items-bar">
-    <h3>🎒 アイテム（クリックで使用）</h3>
-    <div class="items-list" id="items-list">
-      <span class="no-items">アイテムなし</span>
+  <!-- 右カラム：倍率表＋ランキング -->
+  <div class="right-col">
+
+    <div class="panel">
+      <div class="panel-header">🎰 当たり倍率</div>
+      <div class="panel-row"><span class="sym">🃏</span><span class="name">ジャックポット</span><span class="mult-badge hi">50倍</span></div>
+      <div class="panel-row"><span class="sym">7️⃣</span><span class="name">ラッキー7</span><span class="mult-badge hi">25倍</span></div>
+      <div class="panel-row"><span class="sym">💎</span><span class="name">ダイヤ</span><span class="mult-badge hi">15倍</span></div>
+      <div class="panel-row"><span class="sym">⭐</span><span class="name">スター</span><span class="mult-badge">8倍</span></div>
+      <div class="panel-row"><span class="sym">🔔</span><span class="name">ベル</span><span class="mult-badge">5倍</span></div>
+      <div class="panel-row"><span class="sym">🍊</span><span class="name">オレンジ</span><span class="mult-badge">4倍</span></div>
+      <div class="panel-row"><span class="sym">🍒/🍋</span><span class="name">チェリー/レモン</span><span class="mult-badge">3倍</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">📊 リアルタイムランキング</div>
+      <div id="ranking-list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">🎁 アイテム効果</div>
+      <div class="panel-row"><span class="name" style="font-size:0.72rem">🌟 ゴールデンラッキー</span><span class="mult-badge hi">全倍率×3</span></div>
+      <div class="panel-row"><span class="name" style="font-size:0.72rem">🃏 ワイルドカード</span><span class="mult-badge">1リール固定</span></div>
+      <div class="panel-row"><span class="name" style="font-size:0.72rem">💎 ダブルアップ</span><span class="mult-badge">倍率×2</span></div>
+      <div class="panel-row"><span class="name" style="font-size:0.72rem">🔄 フリースピン</span><span class="mult-badge">+2スピン</span></div>
+      <div class="panel-row"><span class="name" style="font-size:0.72rem">⭐ ラッキースター</span><span class="mult-badge">倍率×1.3</span></div>
+      <div class="panel-row"><span class="name" style="font-size:0.72rem">🪙 コインブースト</span><span class="mult-badge">ハズレ補填</span></div>
     </div>
   </div>
-
-  <!-- プレイヤーランキング（リアルタイム）-->
-  <div class="ranking-section">
-    <h3>📊 現在の所持金ランキング</h3>
-    <div id="ranking-list"></div>
-  </div>
-
-  <p style="text-align:center;color:var(--text-muted);font-size:0.85rem;margin-top:8px" id="end-status"></p>
 </div>
 
 <!-- 最終結果 -->
 <div class="final-overlay" id="final-overlay">
   <div class="final-box">
     <h2>🏆 GAME OVER 🏆</h2>
-    <p style="color:var(--text-muted);margin-bottom:8px">最終結果</p>
+    <p style="color:var(--text-muted);margin-bottom:4px;font-size:0.9rem">最終結果</p>
     <div class="winner-name" id="final-winner"></div>
-    <p style="color:var(--gold);font-size:0.9rem;margin-bottom:20px">が優勝！</p>
-    <div class="final-ranking" id="final-ranking"></div>
-    <button class="btn btn-gold" style="width:100%;margin-top:20px" onclick="location.href='index.html'">🏠 ロビーへ戻る</button>
+    <p style="color:var(--gold);font-size:0.85rem;margin-bottom:16px">が優勝！</p>
+    <div id="final-ranking" style="text-align:left;background:var(--dark3);border-radius:10px;padding:14px;margin-bottom:16px"></div>
+    <button class="btn btn-gold" style="width:100%" onclick="location.href='index.html'">🏠 ロビーへ戻る</button>
   </div>
 </div>
 
@@ -319,36 +218,31 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
-// ─── スロットシンボル ───
+// ─── 定数 ───
 const SYMBOLS=['🍒','🍋','🍊','🔔','⭐','💎','7️⃣','🃏'];
 const PAYOUTS={
   '🍒🍒🍒':{name:'チェリー3つ',mult:3},
   '🍋🍋🍋':{name:'レモン3つ',mult:3},
   '🍊🍊🍊':{name:'オレンジ3つ',mult:4},
   '🔔🔔🔔':{name:'ベル3つ',mult:5},
-  '⭐⭐⭐':{name:'スター3つ',mult:8},
-  '💎💎💎':{name:'ダイヤ3つ',mult:15},
-  '7️⃣7️⃣7️⃣':{name:'ラッキー7！',mult:25},
-  '🃏🃏🃏':{name:'ジャックポット！！',mult:50},
+  '⭐⭐⭐':{name:'スター3つ！',mult:8},
+  '💎💎💎':{name:'ダイヤ3つ！',mult:15},
+  '7️⃣7️⃣7️⃣':{name:'ラッキー7！！',mult:25},
+  '🃏🃏🃏':{name:'JACKPOT！！！',mult:50},
 };
-const JACKPOT='🃏🃏🃏';
+const BASE_SPINS=10;
+const MAX_SPINS=100;
 
 // ─── 状態 ───
 const roomId=getRoomId();
 const playerId=getPlayerId();
-let myMoney=0;
-let myItems=[];
-let allPlayers={};
+let myMoney=0,myItems=[],allPlayers={};
 let selectedBet=200;
-let spinsLeft=5;
-let spinsUsed=0;
-let activeItems=new Set();
-let usedItems=new Set();
-let isSpinning=false;
-let gameEnded=false;
-let spinsFinishedPlayers=new Set();
-
-if(!roomId) location.href='index.html';
+let spinsLeft=BASE_SPINS,spinsUsed=0,maxSpins=BASE_SPINS;
+let activeItems=new Set(); // アクティブなアイテムのインデックス
+let usedItemIndices=new Set(); // 消費済みアイテムのインデックス
+let isSpinning=false,gameEnded=false;
+if(!roomId)location.href='index.html';
 
 // ─── Firebase監視 ───
 db.ref('rooms/'+roomId+'/players').on('value',snap=>{
@@ -361,263 +255,264 @@ db.ref('rooms/'+roomId+'/players').on('value',snap=>{
   }
   renderRanking();
   renderItems();
-  checkAllDone();
 });
 
 db.ref('rooms/'+roomId+'/slot/finished').on('value',snap=>{
   const finished=snap.val()||{};
-  spinsFinishedPlayers=new Set(Object.keys(finished).filter(k=>finished[k]));
-  checkAllDone();
+  const total=Object.keys(allPlayers).length;
+  const doneCount=Object.values(finished).filter(Boolean).length;
+  if(total>0&&doneCount>=total&&!gameEnded){
+    gameEnded=true;
+    setTimeout(showFinalResult,1500);
+  }
 });
 
 // ─── ベット設定 ───
 function setBet(v){
   selectedBet=v;
-  document.querySelectorAll('.bet-option').forEach(b=>{
-    b.classList.toggle('active',b.textContent.includes(v.toLocaleString()));
-  });
+  document.querySelectorAll('.bet-option').forEach(b=>b.classList.toggle('active',b.textContent.includes(v.toLocaleString())));
+}
+
+// ─── スピン数バー更新 ───
+function updateSpinsUI(){
+  document.getElementById('spins-left').textContent=spinsLeft;
+  document.getElementById('spins-used').textContent=spinsUsed;
+  const pct=Math.max(0,spinsLeft/maxSpins*100);
+  document.getElementById('spins-bar-fill').style.width=pct+'%';
+  // やめるボタンは1スピン以上使ったら表示
+  document.getElementById('stop-btn').style.display=spinsUsed>0&&spinsLeft>0?'block':'none';
 }
 
 // ─── アイテム描画 ───
 function renderItems(){
   const list=document.getElementById('items-list');
   if(!myItems.length){list.innerHTML='<span class="no-items">アイテムなし</span>';return;}
-  list.innerHTML=myItems.map((item,i)=>`
-    <div class="item-pill${activeItems.has(i)?' active':''}${usedItems.has(i)?' used':''}"
-         onclick="toggleItem(${i})">
+  list.innerHTML=myItems.map((item,i)=>{
+    const isUsed=usedItemIndices.has(i);
+    const isActive=activeItems.has(i);
+    // 複数個持ちの場合：残り使用可能回数を表示
+    const remainCount=(item.count||1)-[...usedItemIndices].filter(ui=>ui===i).length;
+    return `<div class="item-pill${isActive?' active':''}${isUsed&&remainCount<=0?' used':''}"
+      onclick="toggleItem(${i})">
       ${item.icon} ${item.name}
-      ${item.count>1?`<span class="item-count">×${item.count}</span>`:''}
-    </div>`).join('');
+      ${item.count>1?`<span class="item-count">×${remainCount}</span>`:''}
+    </div>`;
+  }).join('');
 }
 
 function toggleItem(i){
-  if(usedItems.has(i))return;
+  if(isSpinning)return;
+  const item=myItems[i];
+  if(!item)return;
+  // 残り回数0なら操作不可
+  const used=[...usedItemIndices].filter(ui=>ui===i).length;
+  if(used>=(item.count||1))return;
   if(activeItems.has(i)){activeItems.delete(i);}else{activeItems.add(i);}
   renderItems();
 }
 
-// ─── アイテム効果取得 ───
-function getMultiplierFromItems(){
+// ─── アイテム効果計算 ───
+function calcItemEffects(){
   let mult=1;
+  let wildReel=false;
+  let jackpot5x=false;
+  let consolation=false;
+  let extraSpins=0;
+  let cherry1=false;
+
   activeItems.forEach(i=>{
     const item=myItems[i];
     if(!item)return;
-    if(item.effect==='mult_all_3x') mult*=3;
-    if(item.effect==='mult_2x') mult*=2;
-    if(item.effect==='mult_1.3x') mult*=1.3;
-    if(item.effect==='next_mult_plus0.5') mult+=0.5;
-    if(item.effect==='cherry_plus1'){/* handled in payout*/}
-  });
-  return mult;
-}
-
-function hasExtraSpin(){
-  for(const i of activeItems){
-    const item=myItems[i];
-    if(item?.effect?.startsWith('extra_spin')){
-      const extra=parseInt(item.effect.split('_')[2])||0;
-      return extra;
+    switch(item.effect){
+      case 'mult_all_3x': mult*=3; break;
+      case 'mult_2x': mult*=2; break;
+      case 'mult_1.3x': mult*=1.3; break;
+      case 'next_mult_plus0.5': mult+=0.5; break;
+      case 'wild_reel': wildReel=true; break;
+      case 'jackpot_5x': jackpot5x=true; break;
+      case 'consolation': consolation=true; break;
+      case 'cherry_plus1': cherry1=true; break;
     }
-  }
-  return 0;
+    if(item.effect&&item.effect.startsWith('extra_spin_')){
+      extraSpins+=parseInt(item.effect.split('_')[2])||0;
+    }
+  });
+  return{mult,wildReel,jackpot5x,consolation,extraSpins,cherry1};
 }
 
-function hasWildReel(){
-  for(const i of activeItems){
-    if(myItems[i]?.effect==='wild_reel') return true;
-  }
-  return false;
-}
+// ─── アイテム消費（使ったアイテムを記録）───
+async function consumeActiveItems(){
+  // 複数個持ちのアイテムは count を減らす
+  if(activeItems.size===0)return;
+  const newItems=myItems.map((item,i)=>{
+    if(!activeItems.has(i))return item;
+    usedItemIndices.add(i);
+    const newCount=Math.max(0,(item.count||1)-1);
+    return{...item,count:newCount};
+  }).filter(item=>(item.count||1)>0|!activeItems.has(myItems.indexOf(item)));
 
-function hasJackpot5x(){
-  for(const i of activeItems){
-    if(myItems[i]?.effect==='jackpot_5x') return true;
-  }
-  return false;
-}
-
-function hasConsolation(){
-  for(const i of activeItems){
-    if(myItems[i]?.effect==='consolation') return true;
-  }
-  return false;
+  // countが0のものを除去
+  const filtered=newItems.filter(item=>item.count===undefined||item.count>0);
+  await db.ref('rooms/'+roomId+'/players/'+playerId+'/items').set(filtered);
+  activeItems.clear();
+  usedItemIndices.clear();
 }
 
 // ─── スピン ───
 async function doSpin(){
-  if(isSpinning||spinsLeft<=0||gameEnded) return;
-  if(selectedBet>myMoney){
-    document.getElementById('spin-result').textContent='所持金が足りません';return;
-  }
+  if(isSpinning||spinsLeft<=0||gameEnded)return;
+  if(selectedBet>myMoney){document.getElementById('spin-result').textContent='所持金が足りません';return;}
+
   isSpinning=true;
   document.getElementById('spin-btn').disabled=true;
+  document.getElementById('stop-btn').style.display='none';
+
+  const effects=calcItemEffects();
 
   // ベット消費
-  const betAmount=selectedBet;
-  myMoney-=betAmount;
+  myMoney-=selectedBet;
   await db.ref('rooms/'+roomId+'/players/'+playerId+'/money').set(myMoney);
   document.getElementById('header-money').textContent=formatMoney(myMoney);
-
-  // ジャックポット確率調整
-  const jpBoost=hasJackpot5x();
-  const wildReel=hasWildReel();
 
   // リール結果生成
   let results=[];
   for(let r=0;r<3;r++){
-    if(wildReel&&r===0){
-      results.push('🃏');// 1リール目ワイルド
-    } else {
+    if(effects.wildReel&&r===0){results.push('🃏');}
+    else{
       const pool=[...SYMBOLS,...SYMBOLS,...SYMBOLS,'7️⃣','7️⃣'];
-      if(jpBoost) pool.push('🃏','🃏','🃏','🃏','🃏');
+      if(effects.jackpot5x)for(let j=0;j<5;j++)pool.push('🃏');
+      if(effects.cherry1)for(let j=0;j<3;j++)pool.push('🍒');
       results.push(pool[Math.floor(Math.random()*pool.length)]);
     }
   }
 
-  // リールアニメーション
+  // アニメーション
   await animateReels(results);
 
   // 当たり判定
   const key=results.join('');
   let payout=PAYOUTS[key];
   let winnings=0;
-  const itemMult=getMultiplierFromItems();
+  let resultMsg='';
 
   if(payout){
     let baseMult=payout.mult;
-    // チェリーブースト
-    if(key==='🍒🍒🍒'){
-      activeItems.forEach(i=>{if(myItems[i]?.effect==='cherry_plus1')baseMult+=1;});
-    }
-    winnings=Math.floor(betAmount*baseMult*itemMult);
-    document.getElementById('spin-result').textContent=`✨ ${payout.name}！ +${formatMoney(winnings)}`;
-
-    // 当たりエフェクト
+    if(effects.cherry1&&key==='🍒🍒🍒')baseMult+=1;
+    winnings=Math.floor(selectedBet*baseMult*effects.mult);
+    resultMsg='✨ '+payout.name+'！ +'+formatMoney(winnings);
     const rw=document.getElementById('reels-wrapper');
-    rw.classList.add(key===JACKPOT?'jackpot-flash':'win-flash');
+    rw.classList.add(key==='🃏🃏🃏'?'jackpot-flash':'win-flash');
     setTimeout(()=>rw.classList.remove('win-flash','jackpot-flash'),2000);
-
-    if(key===JACKPOT) spawnFireworks();
+    if(key==='🃏🃏🃏')spawnFireworks();
   } else {
-    // はずれ
-    if(hasConsolation()){winnings=Math.floor(betAmount*0.1);}
-    const twoMatch=results[0]===results[1]||results[1]===results[2]||results[0]===results[2];
-    document.getElementById('spin-result').textContent=twoMatch?`惜しい！ ${results.join(' ')}`+(winnings?` +${formatMoney(winnings)}`:''):`ハズレ ${results.join(' ')}`+(winnings?` +${formatMoney(winnings)}`:'');
+    if(effects.consolation){winnings=Math.floor(selectedBet*0.1);}
+    const two=results[0]===results[1]||results[1]===results[2]||results[0]===results[2];
+    resultMsg=(two?'惜しい！ ':'ハズレ ')+results.join(' ')+(winnings?' +'+formatMoney(winnings):'');
   }
 
-  // お金反映
+  document.getElementById('spin-result').textContent=resultMsg;
+
+  // フリースピン追加（アイテム効果）
+  if(effects.extraSpins>0){
+    const addable=Math.min(effects.extraSpins,MAX_SPINS-(spinsLeft-1+spinsUsed+1));
+    spinsLeft+=addable;
+    maxSpins=Math.min(MAX_SPINS,maxSpins+addable);
+    if(addable>0)document.getElementById('spin-result').textContent+=` (+${addable}スピン追加！)`;
+  }
+
+  // お金更新
   myMoney+=winnings;
   await db.ref('rooms/'+roomId+'/players/'+playerId+'/money').set(myMoney);
   document.getElementById('header-money').textContent=formatMoney(myMoney);
 
   // アイテム消費
-  activeItems.forEach(i=>{usedItems.add(i);});
-  activeItems.clear();
+  await consumeActiveItems();
   renderItems();
 
-  // スピン回数更新
   spinsUsed++;
   spinsLeft--;
-  const extraSpins=hasExtraSpin();
-  if(extraSpins>0&&!usedItems.has([...activeItems][0])){spinsLeft+=extraSpins;}
-  document.getElementById('spins-left').textContent=spinsLeft;
-  document.getElementById('spins-used').textContent=spinsUsed;
-
+  updateSpinsUI();
   isSpinning=false;
 
   if(spinsLeft<=0){
-    document.getElementById('spin-btn').disabled=true;
-    document.getElementById('spin-btn').textContent='スピン終了';
-    document.getElementById('end-status').textContent='スピン終了！全員終わるまでお待ちください…';
-    await db.ref('rooms/'+roomId+'/slot/finished/'+playerId).set(true);
+    await finishSlot();
   } else {
     document.getElementById('spin-btn').disabled=false;
   }
 }
 
+// ─── 途中でやめる ───
+async function stopEarly(){
+  if(isSpinning||gameEnded)return;
+  if(!confirm('残り'+spinsLeft+'スピンを放棄して終了しますか？'))return;
+  spinsLeft=0;
+  updateSpinsUI();
+  document.getElementById('spin-btn').disabled=true;
+  document.getElementById('stop-btn').style.display='none';
+  document.getElementById('spin-result').textContent='スピンを終了しました';
+  await finishSlot();
+}
+
+async function finishSlot(){
+  document.getElementById('spin-btn').disabled=true;
+  document.getElementById('spin-btn').textContent='スピン終了';
+  document.getElementById('stop-btn').style.display='none';
+  document.getElementById('end-status').textContent='スピン終了！全員終わるまでお待ちください…';
+  await db.ref('rooms/'+roomId+'/slot/finished/'+playerId).set(true);
+}
+
 // ─── リールアニメーション ───
 function animateReels(results){
   return new Promise(resolve=>{
-    const delays=[0,300,600];
     results.forEach((sym,i)=>{
       const reel=document.getElementById('reel-'+i);
-      reel.style.animationDuration='0.06s';
       reel.classList.add('spinning');
       setTimeout(()=>{
         reel.classList.remove('spinning');
-        reel.innerHTML=`<div class="symbol">${sym}</div>`;
-      },800+delays[i]);
+        reel.innerHTML='<div class="symbol">'+sym+'</div>';
+      },700+i*250);
     });
-    setTimeout(resolve,1500);
+    setTimeout(resolve,1400);
   });
 }
 
-// ─── ランキング描画 ───
+// ─── ランキング ───
 function renderRanking(){
-  const sorted=Object.entries(allPlayers)
-    .sort(([,a],[,b])=>b.money-a.money);
-  const list=document.getElementById('ranking-list');
-  list.innerHTML=sorted.map(([pid,p],i)=>{
-    const cls=['rank-1','rank-2','rank-3','rank-other'][Math.min(i,3)];
-    const num=i===0?'👑':i===1?'2':i===2?'3':'…';
+  const sorted=Object.entries(allPlayers).sort(([,a],[,b])=>b.money-a.money);
+  document.getElementById('ranking-list').innerHTML=sorted.map(([pid,p],i)=>{
+    const cls=['rank-1','rank-2','rank-3','rank-o'][Math.min(i,3)];
+    const num=i===0?'👑':(i+1)+'';
     return `<div class="rank-row">
       <div class="rank-num ${cls}">${num}</div>
-      <div class="rank-name">${p.name}${pid===playerId?' (あなた)':''}</div>
+      <div class="rank-name">${p.name}${pid===playerId?' ★':''}</div>
       <div class="rank-money">${formatMoney(p.money)}</div>
     </div>`;
   }).join('');
 }
 
-// ─── 全員終了チェック ───
-function checkAllDone(){
-  if(gameEnded)return;
-  const total=Object.keys(allPlayers).length;
-  if(total===0)return;
-  if(spinsFinishedPlayers.size>=total){
-    gameEnded=true;
-    setTimeout(showFinalResult,1500);
-  }
-}
-
 // ─── 最終結果 ───
 function showFinalResult(){
   const sorted=Object.entries(allPlayers).sort(([,a],[,b])=>b.money-a.money);
-  const winner=sorted[0];
-  document.getElementById('final-winner').textContent=winner[1].name;
+  document.getElementById('final-winner').textContent=sorted[0][1].name;
   document.getElementById('final-overlay').classList.add('show');
-
-  const fr=document.getElementById('final-ranking');
-  fr.innerHTML=sorted.map(([pid,p],i)=>{
-    const medals=['🥇','🥈','🥉','4️⃣'];
-    return `<div class="rank-row">
-      <div style="font-size:1.5rem">${medals[i]||'　'}</div>
-      <div style="flex:1;font-size:0.95rem">${p.name}${pid===playerId?' (あなた)':''}</div>
-      <div style="color:var(--gold);font-weight:700">${formatMoney(p.money)}</div>
-    </div>`;
-  }).join('');
-
-  spawnFireworks();
-  spawnFireworks();
+  const medals=['🥇','🥈','🥉','4位'];
+  document.getElementById('final-ranking').innerHTML=sorted.map(([pid,p],i)=>
+    `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:1.3rem">${medals[i]||''}</span>
+      <span style="flex:1;font-size:0.9rem">${p.name}${pid===playerId?' (あなた)':''}</span>
+      <span style="color:var(--gold);font-weight:700">${formatMoney(p.money)}</span>
+    </div>`).join('');
+  spawnFireworks();spawnFireworks();
 }
 
-// ─── 花火エフェクト ───
+// ─── 花火 ───
 function spawnFireworks(){
   const colors=['#f0d080','#c9a84c','#e74c3c','#2ecc71','#3498db','#9b59b6'];
-  for(let i=0;i<12;i++){
-    const fw=document.createElement('div');
-    fw.className='firework';
+  for(let i=0;i<14;i++){
+    const fw=document.createElement('div');fw.className='firework';
     const size=40+Math.random()*60;
-    fw.style.cssText=`
-      left:${20+Math.random()*60}vw;
-      top:${10+Math.random()*60}vh;
-      width:${size}px;height:${size}px;
-      border:3px solid ${colors[Math.floor(Math.random()*colors.length)]};
-      border-radius:50%;
-      animation-delay:${Math.random()*0.5}s;
-      animation-duration:${0.6+Math.random()*0.4}s;
-    `;
-    document.body.appendChild(fw);
-    setTimeout(()=>fw.remove(),1200);
+    fw.style.cssText=`left:${15+Math.random()*70}vw;top:${10+Math.random()*60}vh;width:${size}px;height:${size}px;border:3px solid ${colors[i%colors.length]};animation-delay:${Math.random()*0.4}s;animation-duration:${0.6+Math.random()*0.4}s;`;
+    document.body.appendChild(fw);setTimeout(()=>fw.remove(),1200);
   }
 }
 
@@ -626,18 +521,21 @@ window.addEventListener('DOMContentLoaded',async()=>{
   const snap=await db.ref('rooms/'+roomId+'/players/'+playerId).once('value');
   const p=snap.val();
   if(p){
-    myMoney=p.money;
-    myItems=p.items||[];
+    myMoney=p.money;myItems=p.items||[];
     document.getElementById('header-money').textContent=formatMoney(myMoney);
     renderItems();
+    // フリースピンアイテムの初期スピン数加算
+    let extra=0;
+    myItems.forEach(item=>{
+      if(item.effect&&item.effect.startsWith('extra_spin_')){
+        const n=parseInt(item.effect.split('_')[2])||0;
+        extra+=n*(item.count||1);
+      }
+    });
+    spinsLeft=Math.min(BASE_SPINS+extra,MAX_SPINS);
+    maxSpins=spinsLeft;
   }
-  // スピン数：アイテムのextra_spinを最初から加算
-  const extraOnStart=myItems.reduce((s,item)=>{
-    if(item.effect?.startsWith('extra_spin')) return s+parseInt(item.effect.split('_')[2]||0);
-    return s;
-  },0);
-  spinsLeft=5+extraOnStart;
-  document.getElementById('spins-left').textContent=spinsLeft;
+  updateSpinsUI();
 });
 </script>
 </body>
